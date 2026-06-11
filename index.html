@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="SafeWork AI, asistente inteligente de seguridad para obras de construccion." />
+    <title>SafeWork AI</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="Navegacion principal">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">
+            <span></span>
+          </div>
+          <div>
+            <strong>SafeWork AI</strong>
+            <small>Asistente de seguridad</small>
+          </div>
+        </div>
+
+        <nav class="nav-tabs" aria-label="Secciones">
+          <button class="nav-tab active" data-view="consulta" type="button">
+            <span class="icon">⌁</span>
+            Consulta
+          </button>
+          <button class="nav-tab" data-view="biblioteca" type="button">
+            <span class="icon">□</span>
+            Biblioteca EPP
+          </button>
+          <button class="nav-tab" data-view="g050" type="button">
+            <span class="icon">G</span>
+            Norma G.050
+          </button>
+          <button class="nav-tab" data-view="historial" type="button">
+            <span class="icon">◷</span>
+            Historial
+          </button>
+          <button class="nav-tab" data-view="perfil" type="button">
+            <span class="icon">◎</span>
+            Perfil
+          </button>
+        </nav>
+
+        <div class="sidebar-panel">
+          <small>Indice general</small>
+          <div class="sidebar-score">
+            <span id="miniScore">--</span>
+            <i id="miniSignal" class="signal medium"></i>
+          </div>
+          <p id="miniSummary">Completa una consulta para ver el estado de seguridad.</p>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Centro de monitoreo laboral</p>
+            <h1>Evaluacion inteligente de riesgos en obra</h1>
+          </div>
+          <div class="top-actions">
+            <label class="top-project" for="activeProjectSelect">
+              <span>Obra activa</span>
+              <select id="activeProjectSelect"></select>
+            </label>
+            <button class="ghost-btn" id="themeToggle" type="button" aria-label="Cambiar modo visual">☾</button>
+            <button class="primary-btn" id="quickDemo" type="button">Cargar demo</button>
+          </div>
+        </header>
+
+        <section class="view active" id="view-consulta">
+          <section class="main-dashboard" aria-label="Dashboard principal">
+            <article class="dashboard-tile project-status">
+              <small>Obra seleccionada</small>
+              <strong id="dashProject">--</strong>
+              <span id="dashStatus">Sin analisis</span>
+            </article>
+            <article class="dashboard-tile">
+              <small>Clima actual</small>
+              <strong id="dashWeather">--</strong>
+              <span id="dashAlerts">Alertas: --</span>
+            </article>
+            <article class="dashboard-tile">
+              <small>Indice de seguridad</small>
+              <strong id="dashScore">--</strong>
+              <span id="dashRisk">Riesgo pendiente</span>
+            </article>
+            <article class="dashboard-tile">
+              <small>Recordatorio solar</small>
+              <strong id="dashSunscreen">--</strong>
+              <span id="dashSunscreenDetail">Se activa con UV significativo</span>
+            </article>
+            <article class="dashboard-tile rule-tile">
+              <small>Regla del dia G.050</small>
+              <strong id="dashRule">--</strong>
+              <button class="text-link" data-view-link="g050" type="button">Abrir quiz</button>
+            </article>
+          </section>
+
+          <div class="hero-grid">
+            <section class="control-panel">
+              <div class="section-title">
+                <span>01</span>
+                <div>
+                  <h2>Datos de la consulta</h2>
+                  <p>Selecciona obra, area, puesto y ubicacion para recalcular el riesgo.</p>
+                </div>
+              </div>
+
+              <form id="assessmentForm" class="assessment-form">
+                <div class="field-group">
+                  <label for="projectSelect">Obra</label>
+                  <div class="input-row">
+                    <select id="projectSelect"></select>
+                    <button class="icon-btn" id="saveProject" type="button" aria-label="Guardar obra">＋</button>
+                  </div>
+                  <input id="projectName" type="text" placeholder="Nombre de nueva obra" autocomplete="organization" />
+                </div>
+
+                <div class="two-cols">
+                  <div class="field-group">
+                    <label for="areaSelect">Area de trabajo</label>
+                    <select id="areaSelect"></select>
+                  </div>
+                  <div class="field-group">
+                    <label for="roleSelect">Puesto laboral</label>
+                    <select id="roleSelect"></select>
+                  </div>
+                </div>
+
+                <div class="two-cols">
+                  <div class="field-group">
+                    <label for="cityInput">Ciudad</label>
+                    <input id="cityInput" type="text" placeholder="Lima" autocomplete="address-level2" />
+                  </div>
+                  <div class="field-group">
+                    <label for="countryInput">Pais</label>
+                    <input id="countryInput" type="text" placeholder="Peru" autocomplete="country-name" />
+                  </div>
+                </div>
+
+                <div class="button-row">
+                  <button class="secondary-btn" id="geoBtn" type="button">Usar ubicacion actual</button>
+                  <button class="primary-btn" type="submit">Analizar seguridad</button>
+                </div>
+              </form>
+            </section>
+
+            <section class="monitor-panel" aria-live="polite">
+              <div class="weather-visual" aria-hidden="true">
+                <div class="crane"></div>
+                <div class="sun"></div>
+                <div class="building building-a"></div>
+                <div class="building building-b"></div>
+                <div class="worker"></div>
+              </div>
+              <div class="weather-readout">
+                <p class="eyebrow">Clima en tiempo real</p>
+                <h2 id="weatherLocation">Sin ubicacion</h2>
+                <div class="weather-grid">
+                  <div><span id="tempValue">--</span><small>Temperatura</small></div>
+                  <div><span id="humidityValue">--</span><small>Humedad</small></div>
+                  <div><span id="windValue">--</span><small>Viento</small></div>
+                  <div><span id="uvValue">--</span><small>UV</small></div>
+                  <div><span id="rainValue">--</span><small>Lluvia</small></div>
+                  <div><span id="alertValue">--</span><small>Alertas</small></div>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          <section class="dashboard-band">
+            <div class="risk-card overall">
+              <div class="traffic" id="trafficLight" aria-label="Semaforo de riesgo">
+                <i class="red"></i>
+                <i class="yellow active"></i>
+                <i class="green"></i>
+              </div>
+              <div>
+                <p class="eyebrow">Resultado principal</p>
+                <h2 id="overallTitle">Esperando consulta</h2>
+                <p id="overallText">El sistema combinara riesgos laborales, clima y EPP requerido.</p>
+              </div>
+              <div class="gauge" style="--score: 0">
+                <span id="scoreValue">--</span>
+                <small>Indice</small>
+              </div>
+            </div>
+
+            <div class="solar-panel" id="solarPanel">
+              <div>
+                <p class="eyebrow">Proteccion solar</p>
+                <h2 id="solarTitle">Monitoreo UV pendiente</h2>
+                <p id="solarText">El sistema recomendara bloqueador cuando el UV o la temperatura lo requieran.</p>
+              </div>
+              <div class="solar-timer">
+                <small>Proxima aplicacion</small>
+                <strong id="sunscreenCountdown">--:--</strong>
+                <span id="spfValue">FPS --</span>
+              </div>
+              <button class="primary-btn" id="applySunscreen" type="button">Bloqueador aplicado</button>
+            </div>
+
+            <div class="risk-metrics">
+              <article>
+                <span class="metric-dot medium" id="workDot"></span>
+                <small>Riesgo laboral</small>
+                <strong id="workRisk">--</strong>
+                <p id="workReason">Selecciona un area y puesto.</p>
+              </article>
+              <article>
+                <span class="metric-dot medium" id="climateDot"></span>
+                <small>Riesgo climatico</small>
+                <strong id="climateRisk">--</strong>
+                <p id="climateReason">Se actualiza con el clima.</p>
+              </article>
+              <article>
+                <span class="metric-dot medium" id="ppeDot"></span>
+                <small>Cobertura EPP</small>
+                <strong id="ppeRisk">--</strong>
+                <p id="ppeReason">Lista generada al analizar.</p>
+              </article>
+            </div>
+          </section>
+
+          <section class="split-results">
+            <div class="result-block">
+              <div class="section-title compact">
+                <span>02</span>
+                <div>
+                  <h2>EPP obligatorio</h2>
+                  <p>Equipos minimos para iniciar la tarea.</p>
+                </div>
+              </div>
+              <div class="ppe-list" id="mandatoryList"></div>
+            </div>
+
+            <div class="result-block">
+              <div class="section-title compact">
+                <span>03</span>
+                <div>
+                  <h2>EPP recomendado</h2>
+                  <p>Refuerzos segun clima y condiciones.</p>
+                </div>
+              </div>
+              <div class="ppe-list" id="recommendedList"></div>
+            </div>
+          </section>
+
+          <section class="ai-panel">
+            <div class="section-title compact">
+              <span>AI</span>
+              <div>
+                <h2>Recomendacion inteligente</h2>
+                <p>Explicacion operativa para el trabajador y el supervisor.</p>
+              </div>
+            </div>
+            <div id="aiRecommendation" class="ai-copy">
+              Completa una consulta para obtener recomendaciones preventivas.
+            </div>
+          </section>
+        </section>
+
+        <section class="view" id="view-biblioteca">
+          <div class="library-head">
+            <div>
+              <p class="eyebrow">Capacitacion interactiva</p>
+              <h2>Biblioteca de equipos de proteccion personal</h2>
+            </div>
+            <input id="librarySearch" type="search" placeholder="Buscar casco, arnes, guantes..." />
+          </div>
+          <div class="library-grid" id="libraryGrid"></div>
+          <article class="training-detail" id="trainingDetail"></article>
+        </section>
+
+        <section class="view" id="view-g050">
+          <div class="g050-hero">
+            <div>
+              <p class="eyebrow">Aprende Seguridad con la Norma G.050</p>
+              <h2>Capacitacion diaria para obra</h2>
+              <p>Reglas explicadas en lenguaje simple, quiz inmediato y progreso por puntos.</p>
+            </div>
+            <div class="learning-score">
+              <small>Nivel actual</small>
+              <strong id="learningLevel">Aprendiz de Seguridad</strong>
+              <span id="learningPoints">0 puntos</span>
+            </div>
+          </div>
+
+          <div class="g050-grid">
+            <section class="rule-card">
+              <div class="section-title compact">
+                <span>D</span>
+                <div>
+                  <h2>Regla del dia</h2>
+                  <p>Recomendacion diaria basada en buenas practicas de la G.050.</p>
+                </div>
+              </div>
+              <h3 id="dailyRuleTitle">--</h3>
+              <p id="dailyRuleText">--</p>
+              <div class="practice-box">
+                <strong>Ejemplo en obra</strong>
+                <p id="dailyRuleExample">--</p>
+              </div>
+            </section>
+
+            <section class="quiz-card">
+              <div class="section-title compact">
+                <span>Q</span>
+                <div>
+                  <h2>Quiz interactivo</h2>
+                  <p>Preguntas aleatorias con correccion inmediata.</p>
+                </div>
+              </div>
+              <div id="quizBox" class="quiz-box"></div>
+              <div class="button-row">
+                <button class="primary-btn" id="startQuiz" type="button">Iniciar quiz</button>
+                <button class="secondary-btn" id="nextQuestion" type="button">Siguiente</button>
+              </div>
+            </section>
+          </div>
+
+          <section class="learning-history">
+            <div class="section-title compact">
+              <span>M</span>
+              <div>
+                <h2>Gamificacion</h2>
+                <p>Puntos, medallas, niveles e historial de resultados.</p>
+              </div>
+            </div>
+            <div class="medal-grid" id="medalGrid"></div>
+            <div class="quiz-history" id="quizHistory"></div>
+          </section>
+        </section>
+
+        <section class="view" id="view-historial">
+          <div class="history-layout">
+            <section>
+              <div class="section-title">
+                <span>H</span>
+                <div>
+                  <h2>Historial inteligente</h2>
+                  <p>Reutiliza configuraciones anteriores y recalcula solo el clima.</p>
+                </div>
+              </div>
+              <div id="historyList" class="history-list"></div>
+            </section>
+            <section>
+              <div class="section-title">
+                <span>O</span>
+                <div>
+                  <h2>Obras registradas</h2>
+                  <p>Base local persistente de obras consultadas.</p>
+                </div>
+              </div>
+              <div id="projectList" class="project-list"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="view-perfil">
+          <div class="profile-grid">
+            <section class="control-panel">
+              <div class="section-title">
+                <span>P</span>
+                <div>
+                  <h2>Perfil del trabajador</h2>
+                  <p>Datos usados para acelerar proximas consultas.</p>
+                </div>
+              </div>
+              <form id="profileForm" class="assessment-form">
+                <div class="field-group">
+                  <label for="workerName">Nombre</label>
+                  <input id="workerName" type="text" placeholder="Nombre del trabajador" autocomplete="name" />
+                </div>
+                <div class="field-group">
+                  <label for="usualRoles">Puestos habituales</label>
+                  <input id="usualRoles" type="text" placeholder="Electricista, Supervisor" />
+                </div>
+                <div class="field-group">
+                  <label for="frequentProjects">Obras frecuentes</label>
+                  <input id="frequentProjects" type="text" placeholder="Obra Norte, Edificio Central" />
+                </div>
+                <div class="field-group">
+                  <label for="certifications">Certificaciones</label>
+                  <textarea id="certifications" rows="4" placeholder="Trabajo en altura, soldadura, primeros auxilios"></textarea>
+                </div>
+                <div class="field-group">
+                  <label for="frequentEquipment">Equipos usados con frecuencia</label>
+                  <textarea id="frequentEquipment" rows="4" placeholder="Casco, botas, arnes"></textarea>
+                </div>
+                <button class="primary-btn" type="submit">Guardar perfil</button>
+              </form>
+            </section>
+            <section class="profile-summary">
+              <p class="eyebrow">Resumen del perfil</p>
+              <h2 id="profileName">Trabajador sin nombre</h2>
+              <div id="profileTags" class="tag-cloud"></div>
+              <p id="profileNote">El perfil se guarda en la base local del navegador.</p>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <template id="ppeCardTemplate">
+      <button class="ppe-card" type="button">
+        <span class="ppe-icon"></span>
+        <strong></strong>
+        <small></small>
+      </button>
+    </template>
+
+    <script src="app.js"></script>
+  </body>
+</html>

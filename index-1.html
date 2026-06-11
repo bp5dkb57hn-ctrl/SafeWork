@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="SafeWork AI, asistente inteligente de seguridad para obras y EPP." />
+    <meta name="theme-color" content="#087f5b" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="SafeWork AI" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="safework-mobile.png" />
+    <link rel="apple-touch-icon" href="safework-mobile.png" />
+    <title>SafeWork AI</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true"><span></span></div>
+          <div>
+            <strong>SafeWork AI</strong>
+            <small>Asistente de seguridad</small>
+          </div>
+        </div>
+
+        <nav class="nav-tabs" aria-label="Secciones de la app">
+          <button class="nav-tab active" type="button" data-view="consulta">📋 Consulta</button>
+          <button class="nav-tab" type="button" data-view="biblioteca">🧰 Biblioteca</button>
+          <button class="nav-tab" type="button" data-view="perfil">👤 Perfil</button>
+          <button class="nav-tab" type="button" data-view="historial">🕘 Historial</button>
+        </nav>
+
+        <article class="sidebar-panel">
+          <p class="eyebrow">Estado</p>
+          <div class="sidebar-score">
+            <strong>Indice</strong>
+            <span id="miniScore">0</span>
+          </div>
+          <div class="sidebar-score">
+            <small id="miniSignal" class="signal low"></small>
+            <small id="miniSummary">Sin analisis aun.</small>
+          </div>
+          <p>La app funciona localmente y puede instalarse como una aplicación en tu dispositivo.</p>
+        </article>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">App descargable</p>
+            <h1>SafeWork AI, lista para instalar como aplicación en tu celular o escritorio.</h1>
+          </div>
+          <div class="top-actions">
+            <button id="themeToggle" class="icon-btn" type="button" aria-label="Cambiar tema">☾</button>
+            <button id="installBtn" class="primary-btn" type="button" hidden>Instalar app</button>
+          </div>
+        </header>
+
+        <section id="view-consulta" class="view active">
+          <div class="hero-grid">
+            <article class="control-panel">
+              <div class="section-title">
+                <span>01</span>
+                <div>
+                  <h2>Analisis de obra</h2>
+                  <p>Registra la obra, el area y el puesto para obtener la lista de EPP y la recomendacion de seguridad.</p>
+                </div>
+              </div>
+
+              <form id="assessmentForm" class="assessment-form">
+                <div class="field-group">
+                  <label for="projectName">Nueva obra</label>
+                  <div class="input-row">
+                    <input id="projectName" type="text" placeholder="Ej. Obra Norte" />
+                    <button id="saveProject" class="secondary-btn" type="button">Guardar</button>
+                  </div>
+                </div>
+
+                <div class="field-group">
+                  <label for="projectSelect">Obra actual</label>
+                  <select id="projectSelect"></select>
+                  <div id="projectList" class="project-list"></div>
+                </div>
+
+                <div class="two-cols">
+                  <label>
+                    Area de trabajo
+                    <select id="areaSelect"></select>
+                  </label>
+                  <label>
+                    Puesto laboral
+                    <select id="roleSelect"></select>
+                  </label>
+                </div>
+
+                <div class="two-cols">
+                  <label>
+                    Ciudad
+                    <input id="cityInput" type="text" placeholder="Lima" />
+                  </label>
+                  <label>
+                    Pais
+                    <input id="countryInput" type="text" placeholder="Peru" />
+                  </label>
+                </div>
+
+                <div class="button-row">
+                  <button class="primary-btn" type="submit">Analizar riesgo</button>
+                  <button id="geoBtn" class="secondary-btn" type="button">Usar ubicacion actual</button>
+                  <button id="quickDemo" class="ghost-btn" type="button">Cargar demo</button>
+                </div>
+              </form>
+            </article>
+
+            <article class="monitor-panel">
+              <div class="weather-visual">
+                <div class="weather-readout" style="padding:18px;position:relative;z-index:1;">
+                  <p class="eyebrow">Clima actual</p>
+                  <h2 id="weatherLocation">Esperando ubicacion</h2>
+                  <p>Esta informacion ayuda a adaptar la recomendacion de seguridad y EPP.</p>
+                </div>
+              </div>
+              <div class="weather-grid" style="padding:16px;gap:10px;display:grid;grid-template-columns:repeat(3,1fr);">
+                <div><small>Temperatura</small><span id="tempValue">--</span></div>
+                <div><small>Humedad</small><span id="humidityValue">--</span></div>
+                <div><small>Viento</small><span id="windValue">--</span></div>
+                <div><small>UV</small><span id="uvValue">--</span></div>
+                <div><small>Lluvia</small><span id="rainValue">--</span></div>
+                <div><small>Alertas</small><span id="alertValue">--</span></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="dashboard-band">
+            <article class="risk-card overall">
+              <div id="trafficLight" class="traffic" aria-label="Semaforo de riesgo">
+                <i class="red"></i>
+                <i class="yellow"></i>
+                <i class="green active"></i>
+              </div>
+              <div>
+                <p class="eyebrow">Resultado</p>
+                <h2 id="overallTitle">Riesgo Bajo</h2>
+                <p id="overallText">El analisis se actualiza al completar el formulario.</p>
+              </div>
+              <div class="gauge" style="--score: 0;">
+                <span id="scoreValue">0</span>
+                <small>Indice</small>
+              </div>
+            </article>
+          </div>
+
+          <div class="risk-metrics">
+            <article>
+              <span class="metric-dot low" id="workDot"></span>
+              <p class="eyebrow">Riesgo laboral</p>
+              <strong id="workRisk">Bajo</strong>
+              <p id="workReason">Aun no se ha realizado una evaluacion.</p>
+            </article>
+            <article>
+              <span class="metric-dot low" id="climateDot"></span>
+              <p class="eyebrow">Riesgo climatico</p>
+              <strong id="climateRisk">Bajo</strong>
+              <p id="climateReason">La condicion climatica se mostrara aqui.</p>
+            </article>
+            <article>
+              <span class="metric-dot low" id="ppeDot"></span>
+              <p class="eyebrow">EPP recomendado</p>
+              <strong id="ppeRisk">Bajo</strong>
+              <p id="ppeReason">Se listara el EPP obligatorio y recomendado.</p>
+            </article>
+          </div>
+
+          <div class="split-results">
+            <article class="result-block">
+              <div class="section-title compact">
+                <span>02</span>
+                <div>
+                  <h2>EPP obligatorio</h2>
+                  <p>Equipos que deben utilizarse de forma prioritaria.</p>
+                </div>
+              </div>
+              <div id="mandatoryList" class="ppe-list"></div>
+            </article>
+            <article class="result-block">
+              <div class="section-title compact">
+                <span>03</span>
+                <div>
+                  <h2>EPP recomendado</h2>
+                  <p>Controles complementarios para reforzar la seguridad.</p>
+                </div>
+              </div>
+              <div id="recommendedList" class="ppe-list"></div>
+            </article>
+          </div>
+
+          <article class="ai-panel">
+            <div class="section-title compact">
+              <span>04</span>
+              <div>
+                <h2>Recomendacion operativa</h2>
+                <p>Resumen de la evaluacion con decisiones preventivas.</p>
+              </div>
+            </div>
+            <div id="aiRecommendation" class="ai-copy"></div>
+          </article>
+        </section>
+
+        <section id="view-biblioteca" class="view">
+          <article class="control-panel">
+            <div class="library-head">
+              <div>
+                <p class="eyebrow">Biblioteca</p>
+                <h2>Catalogo de EPP</h2>
+                <p>Busca y abre una ficha para revisar funcion, riesgos que previene y pasos correctos.</p>
+              </div>
+              <input id="librarySearch" type="search" placeholder="Buscar EPP" />
+            </div>
+            <div id="libraryGrid" class="library-grid"></div>
+          </article>
+          <article id="trainingDetail" class="training-detail"></article>
+        </section>
+
+        <section id="view-perfil" class="view">
+          <div class="profile-grid">
+            <article class="profile-summary">
+              <p class="eyebrow">Perfil del trabajador</p>
+              <h2 id="profileName">Trabajador sin nombre</h2>
+              <p id="profileNote">Guarda tus datos y preferencias localmente.</p>
+              <div id="profileTags" class="tag-cloud"></div>
+            </article>
+            <article class="control-panel">
+              <div class="section-title compact">
+                <span>05</span>
+                <div>
+                  <h2>Editar perfil</h2>
+                  <p>Guarda puestos frecuentes, obras y certificaciones que luego podras reutilizar.</p>
+                </div>
+              </div>
+              <form id="profileForm" class="assessment-form">
+                <label>Nombre del trabajador
+                  <input id="workerName" type="text" placeholder="Ej. Carlos Ramirez" />
+                </label>
+                <label>Puestos usuales
+                  <input id="usualRoles" type="text" placeholder="Electricista, Supervisor" />
+                </label>
+                <label>Obras frecuentes
+                  <input id="frequentProjects" type="text" placeholder="Obra Norte, Edificio San Martin" />
+                </label>
+                <label>Certificaciones
+                  <input id="certifications" type="text" placeholder="Trabajo en altura, primeros auxilios" />
+                </label>
+                <label>Equipos comunes
+                  <input id="frequentEquipment" type="text" placeholder="Casco, botas, guantes" />
+                </label>
+                <button class="primary-btn" type="submit">Guardar perfil</button>
+              </form>
+            </article>
+          </div>
+        </section>
+
+        <section id="view-historial" class="view">
+          <div class="history-layout">
+            <article class="control-panel">
+              <div class="section-title compact">
+                <span>06</span>
+                <div>
+                  <h2>Historial</h2>
+                  <p>Reutiliza consultas anteriores para acelerar decisiones en obra.</p>
+                </div>
+              </div>
+              <div id="historyList" class="history-list"></div>
+            </article>
+            <article class="control-panel">
+              <div class="section-title compact">
+                <span>07</span>
+                <div>
+                  <h2>Proyectos guardados</h2>
+                  <p>Estas obras se mantienen en tu navegador y pueden abrirse de nuevo.</p>
+                </div>
+              </div>
+              <div id="projectListSecondary" class="project-list"></div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
